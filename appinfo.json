@@ -1,0 +1,29 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "Yoctopuce",
+    "longName": "Roomba remote",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "file": "images/pebble.png",
+                "name": "PEEBLE_IMAGE",
+                "type": "png"
+            }
+        ]
+    },
+    "sdkVersion": "3",
+    "shortName": "Roomba",
+    "targetPlatforms": [
+        "aplite",
+        "basalt"
+    ],
+    "uuid": "3173b512-fe9c-4be9-98c6-db18daee5076",
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    }
+}
