@@ -2,7 +2,6 @@
 
 #define TEST_MESSAGE_STR 1  
   
-  
 #define KEY_BUTTON    0
 #define BUTTON_UP     0
 #define BUTTON_SELECT 1
