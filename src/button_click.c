@@ -88,23 +88,34 @@ static void click_config_provider(void *context) {
 
 static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
+#ifdef PBL_COLOR
+  window_set_background_color(window, GColorPictonBlue);
+#else
+  window_set_background_color(window, GColorWhite);
+#endif
   GRect bounds = layer_get_bounds(window_layer);
-  // Create GBitmap, then set to created BitmapLayer
+  // Create roomba icon GBitmap
   s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_PEEBLE_IMAGE);
-  s_background_layer = bitmap_layer_create(GRect(0, 20, 114,114));
-  bitmap_layer_set_bitmap(s_background_layer, s_background_bitmap);
-  //bitmap_layer_set_compositing_mode(s_background_layer,GCompOpSet);
+  // create roomba icon layer
+  s_background_layer = bitmap_layer_create(GRect(0, 35, 114,114));
+  bitmap_layer_set_bitmap(s_background_layer, s_background_bitmap);  
+#ifdef PBL_SDK_3
+  bitmap_layer_set_compositing_mode(s_background_layer,GCompOpSet);
+#endif
   layer_add_child(window_get_root_layer(window), bitmap_layer_get_layer(s_background_layer));
 
-  
-
-  text_layer = text_layer_create((GRect) { .origin = { 0, 0 }, .size = { bounds.size.w - ACTION_BAR_WIDTH, 20 } });
+  // create top message
+  text_layer = text_layer_create((GRect) { .origin = { 0, 0 }, .size = { bounds.size.w - ACTION_BAR_WIDTH, 30 } });
   text_layer_set_text(text_layer, "Press a button");
+  text_layer_set_background_color(text_layer, GColorClear);
+  text_layer_set_font(text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
   text_layer_set_text_alignment(text_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(text_layer));
-
-  text_layer_message = text_layer_create((GRect) { .origin = { 0, bounds.size.h - 21 }, .size = { bounds.size.w - ACTION_BAR_WIDTH, 20 } });
+  // create bottin
+  text_layer_message = text_layer_create((GRect) { .origin = { 0, bounds.size.h - 30 }, .size = { bounds.size.w - ACTION_BAR_WIDTH, 30 } });
   text_layer_set_text(text_layer_message, "...");
+  text_layer_set_background_color(text_layer_message,GColorClear);
+  text_layer_set_font(text_layer_message, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
   text_layer_set_text_alignment(text_layer_message, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(text_layer_message));
 
@@ -128,6 +139,10 @@ static void window_load(Window *window) {
 
 static void window_unload(Window *window) {
   text_layer_destroy(text_layer);
+  text_layer_destroy(text_layer_message);
+  action_bar_layer_destroy(action_bar);
+  bitmap_layer_destroy(s_background_layer);
+  gbitmap_destroy(s_background_bitmap);
 }
 
 static void init(void) {
