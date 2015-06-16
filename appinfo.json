@@ -9,8 +9,39 @@
     "resources": {
         "media": [
             {
-                "file": "images/pebble.png",
-                "name": "PEEBLE_IMAGE",
+                "file": "images/cross.png",
+                "name": "CROSS",
+                "type": "png"
+            },
+            {
+                "file": "images/roomba_color.png",
+                "name": "ROOMBA_COLOR",
+                "type": "png"
+            },
+            {
+                "file": "images/home_icon.png",
+                "name": "DOCK_ICON",
+                "type": "png"
+            },
+            {
+                "file": "images/clean_icon.png",
+                "name": "CLEAN_ICON",
+                "type": "png"
+            },
+            {
+                "file": "images/spot_icon.png",
+                "name": "SPOT_ICON",
+                "type": "png"
+            },
+            {
+                "file": "images/roomba_icon_bw.png",
+                "menuIcon": true,
+                "name": "ROOMBA_ICON_BW",
+                "type": "png"
+            },
+            {
+                "file": "images/roomba_bw.png",
+                "name": "ROOMBA_BW",
                 "type": "png"
             }
         ]
