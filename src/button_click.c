@@ -13,8 +13,8 @@
   
 // misc size defintion
   
-#define ROOMBA_SIZE 66
-#define CROSS_SIZE 75
+#define ROOMBA_SIZE 100
+#define CROSS_SIZE 100
 #define CLEAN_ICON_SIZE 15
 #define SPOT_ICON_SIZE 15
 #define HOME_ICON_SIZE 15
@@ -118,7 +118,7 @@ static void window_load(Window *window) {
   s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_ROOMBA_BW);
 #endif
   // create roomba icon layer
-  s_background_layer = bitmap_layer_create(GRect((bounds.size.w - ACTION_BAR_WIDTH - ROOMBA_SIZE)/2, (bounds.size.h - ROOMBA_SIZE - 20), ROOMBA_SIZE,ROOMBA_SIZE));
+  s_background_layer = bitmap_layer_create(GRect((bounds.size.w - ACTION_BAR_WIDTH - ROOMBA_SIZE)/2, (bounds.size.h - ROOMBA_SIZE - 5), ROOMBA_SIZE,ROOMBA_SIZE));
   bitmap_layer_set_bitmap(s_background_layer, s_background_bitmap);  
 #ifdef PBL_SDK_3
   bitmap_layer_set_compositing_mode(s_background_layer,GCompOpSet);
@@ -126,9 +126,13 @@ static void window_load(Window *window) {
   layer_add_child(window_get_root_layer(window), bitmap_layer_get_layer(s_background_layer));
 
  // Create roomba icon GBitmap
+#ifdef PBL_COLOR
   s_cross_bitmap = gbitmap_create_with_resource(RESOURCE_ID_CROSS);
+#else
+  s_cross_bitmap = gbitmap_create_with_resource(RESOURCE_ID_CROSS_BW);
+#endif  
   // create roomba icon layer
-  s_cross_layer = bitmap_layer_create(GRect((bounds.size.w - ACTION_BAR_WIDTH - CROSS_SIZE)/2, (bounds.size.h - CROSS_SIZE - 20), CROSS_SIZE,CROSS_SIZE));
+  s_cross_layer = bitmap_layer_create(GRect((bounds.size.w - ACTION_BAR_WIDTH - CROSS_SIZE)/2, (bounds.size.h - CROSS_SIZE - 5), CROSS_SIZE,CROSS_SIZE));
   bitmap_layer_set_bitmap(s_cross_layer, s_cross_bitmap);  
 #ifdef PBL_SDK_3
   bitmap_layer_set_compositing_mode(s_cross_layer,GCompOpSet);
@@ -152,10 +156,15 @@ static void window_load(Window *window) {
   // Set the click config provider:
   action_bar_layer_set_click_config_provider(action_bar,
                                              click_config_provider);
-
+#ifdef PBL_COLOR
    s_clean_bitmap = gbitmap_create_with_resource(RESOURCE_ID_CLEAN_ICON);
    s_spot_bitmap = gbitmap_create_with_resource(RESOURCE_ID_SPOT_ICON);
    s_home_bitmap = gbitmap_create_with_resource(RESOURCE_ID_DOCK_ICON);
+#else
+   s_clean_bitmap = gbitmap_create_with_resource(RESOURCE_ID_CLEAN_ICON_BW);
+   s_spot_bitmap = gbitmap_create_with_resource(RESOURCE_ID_SPOT_ICON_BW);
+   s_home_bitmap = gbitmap_create_with_resource(RESOURCE_ID_DOCK_ICON_BW);
+#endif  
 
   
   // Set the icons:
