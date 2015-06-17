@@ -10,52 +10,27 @@
         "media": [
             {
                 "file": "images/dock_icon_bw.png",
-                "name": "DOCK_ICON_BW",
-                "type": "png"
-            },
-            {
-                "file": "images/spot_icon_bw.png",
-                "name": "SPOT_ICON_BW",
-                "type": "png"
-            },
-            {
-                "file": "images/clean_icon_bw.png",
-                "name": "CLEAN_ICON_BW",
-                "type": "png"
-            },
-            {
-                "file": "images/cross_bw.png",
-                "name": "CROSS_BW",
-                "type": "png"
-            },
-            {
-                "file": "images/roomba_color.png",
-                "name": "ROOMBA_COLOR",
-                "type": "png"
-            },
-            {
-                "file": "images/roomba_bw.png",
-                "name": "ROOMBA_BW",
-                "type": "png"
-            },
-            {
-                "file": "images/cross.png",
-                "name": "CROSS",
-                "type": "png"
-            },
-            {
-                "file": "images/home_icon.png",
                 "name": "DOCK_ICON",
                 "type": "png"
             },
             {
-                "file": "images/clean_icon.png",
-                "name": "CLEAN_ICON",
+                "file": "images/cross_bw.png",
+                "name": "CROSS_FULL",
                 "type": "png"
             },
             {
-                "file": "images/spot_icon.png",
+                "file": "images/roomba_bw.png",
+                "name": "ROOMBA_FULL",
+                "type": "png"
+            },
+            {
+                "file": "images/spot_icon_bw.png",
                 "name": "SPOT_ICON",
+                "type": "png"
+            },
+            {
+                "file": "images/clean_icon_bw.png",
+                "name": "CLEAN_ICON",
                 "type": "png"
             },
             {

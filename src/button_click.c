@@ -112,11 +112,7 @@ static void window_load(Window *window) {
   
   GRect bounds = layer_get_bounds(window_layer);
   // Create roomba icon GBitmap
-#ifdef PBL_COLOR
-  s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_ROOMBA_COLOR);
-#else
-  s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_ROOMBA_BW);
-#endif
+  s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_ROOMBA_FULL);
   // create roomba icon layer
   s_background_layer = bitmap_layer_create(GRect((bounds.size.w - ACTION_BAR_WIDTH - ROOMBA_SIZE)/2, (bounds.size.h - ROOMBA_SIZE - 5), ROOMBA_SIZE,ROOMBA_SIZE));
   bitmap_layer_set_bitmap(s_background_layer, s_background_bitmap);  
@@ -126,11 +122,7 @@ static void window_load(Window *window) {
   layer_add_child(window_get_root_layer(window), bitmap_layer_get_layer(s_background_layer));
 
  // Create roomba icon GBitmap
-#ifdef PBL_COLOR
-  s_cross_bitmap = gbitmap_create_with_resource(RESOURCE_ID_CROSS);
-#else
-  s_cross_bitmap = gbitmap_create_with_resource(RESOURCE_ID_CROSS_BW);
-#endif  
+  s_cross_bitmap = gbitmap_create_with_resource(RESOURCE_ID_CROSS_FULL);
   // create roomba icon layer
   s_cross_layer = bitmap_layer_create(GRect((bounds.size.w - ACTION_BAR_WIDTH - CROSS_SIZE)/2, (bounds.size.h - CROSS_SIZE - 5), CROSS_SIZE,CROSS_SIZE));
   bitmap_layer_set_bitmap(s_cross_layer, s_cross_bitmap);  
@@ -138,44 +130,28 @@ static void window_load(Window *window) {
   bitmap_layer_set_compositing_mode(s_cross_layer,GCompOpSet);
 #endif
   layer_add_child(window_get_root_layer(window), bitmap_layer_get_layer(s_cross_layer));
-
-
   
 
   // create message layer
   text_layer_message = text_layer_create((GRect) { .origin = { 0, 10 }, .size = { bounds.size.w -  ACTION_BAR_WIDTH , 30 } });
   text_layer_set_background_color(text_layer_message,GColorClear);
-  text_layer_set_font(text_layer_message, fonts_get_system_font(FONT_KEY_ROBOTO_CONDENSED_21));
+  text_layer_set_font(text_layer_message, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
   text_layer_set_text_alignment(text_layer_message, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(text_layer_message));
-
-  // Initialize the action bar:
-  action_bar = action_bar_layer_create();
-  // Associate the action bar with the window:
-  action_bar_layer_add_to_window(action_bar, window);
-  // Set the click config provider:
-  action_bar_layer_set_click_config_provider(action_bar,
-                                             click_config_provider);
-#ifdef PBL_COLOR
-   s_clean_bitmap = gbitmap_create_with_resource(RESOURCE_ID_CLEAN_ICON);
-   s_spot_bitmap = gbitmap_create_with_resource(RESOURCE_ID_SPOT_ICON);
-   s_home_bitmap = gbitmap_create_with_resource(RESOURCE_ID_DOCK_ICON);
-#else
-   s_clean_bitmap = gbitmap_create_with_resource(RESOURCE_ID_CLEAN_ICON_BW);
-   s_spot_bitmap = gbitmap_create_with_resource(RESOURCE_ID_SPOT_ICON_BW);
-   s_home_bitmap = gbitmap_create_with_resource(RESOURCE_ID_DOCK_ICON_BW);
-#endif  
-
   
-  // Set the icons:
-  // The loading the icons is omitted for brevity... See HeapBitmap.
+   // Initialize the action bar:
+  action_bar = action_bar_layer_create();
+  action_bar_layer_add_to_window(action_bar, window);
+  action_bar_layer_set_click_config_provider(action_bar, click_config_provider);
+  s_clean_bitmap = gbitmap_create_with_resource(RESOURCE_ID_CLEAN_ICON);
+  s_spot_bitmap = gbitmap_create_with_resource(RESOURCE_ID_SPOT_ICON);
+  s_home_bitmap = gbitmap_create_with_resource(RESOURCE_ID_DOCK_ICON);
   action_bar_layer_set_icon(action_bar, BUTTON_ID_UP, s_clean_bitmap);
   action_bar_layer_set_icon(action_bar, BUTTON_ID_SELECT, s_spot_bitmap);
   action_bar_layer_set_icon(action_bar, BUTTON_ID_DOWN, s_home_bitmap);
 
 
-  
-  refreshMessage("...");
+  refreshMessage("Connecting...");
 
 }
 
@@ -203,7 +179,7 @@ static void init(void) {
   window_set_click_config_provider(window, click_config_provider);
 
   window_set_window_handlers(window, (WindowHandlers) {
-	.load = window_load,
+  .load = window_load,
     .unload = window_unload,
   });
   
