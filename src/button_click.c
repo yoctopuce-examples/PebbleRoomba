@@ -1,7 +1,6 @@
 #include <pebble.h>
 
 #define TEST_MESSAGE_STR 1  
-#define TEST_STATE       2  
   
   
 #define KEY_CMD       0
@@ -10,6 +9,15 @@
 #define CMD_DOCK      2
 #define CMD_UNKNOWN   3
   
+  
+  
+#define ROOMBA_STATE       2  
+#define ROOMBA_STATE_CLEANING 0
+#define ROOMBA_STATE_SPOTING 1
+#define ROOMBA_STATE_DOCKING 2
+#define ROOMBA_STATE_OFF 3
+#define ROOMBA_STATE_OFFLINE 4
+
   
 // misc size defintion
   
@@ -46,6 +54,23 @@ static void refreshMessage(const char* msg)
 
 
 
+static void refreshState(int state)
+{
+  switch(state) {
+  case ROOMBA_STATE_CLEANING :
+  case ROOMBA_STATE_SPOTING :
+  case ROOMBA_STATE_DOCKING :
+  case ROOMBA_STATE_OFF :
+    layer_set_hidden((Layer *)s_cross_layer,true);
+    break;
+  case ROOMBA_STATE_OFFLINE :  
+    layer_set_hidden((Layer *)s_cross_layer,false);
+    break;
+  }
+}
+  
+
+
 static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
   // Read first item
   Tuple *t = dict_read_first(iterator);
@@ -57,6 +82,8 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     case TEST_MESSAGE_STR:
       refreshMessage(t->value->cstring);
       break;
+    case ROOMBA_STATE:
+      refreshState(t->value->uint16);
       break;
     default:
       APP_LOG(APP_LOG_LEVEL_ERROR, "Key %d not recognized!", (int)t->key);
