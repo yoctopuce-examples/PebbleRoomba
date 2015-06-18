@@ -1,25 +1,26 @@
 #include <pebble.h>
 
-#define TEST_MESSAGE_STR 1  
-  
+
+// PACKET DEFINITIONS  
   
 #define KEY_CMD       0
 #define CMD_CLEAN     0
 #define CMD_SPOT      1
 #define CMD_DOCK      2
-#define CMD_UNKNOWN   3
+#define CMD_GET_STATE 3
   
+#define KEY_MESSAGE 1  
   
-  
-#define ROOMBA_STATE       2  
-#define ROOMBA_STATE_CLEANING 0
-#define ROOMBA_STATE_SPOTING 1
-#define ROOMBA_STATE_DOCKING 2
-#define ROOMBA_STATE_OFF 3
-#define ROOMBA_STATE_OFFLINE 4
+#define KEY_STATE       2  
+#define STATE_CLEANING 0
+#define STATE_SPOTING 1
+#define STATE_DOCKING 2
+#define STATE_OFF 3
+#define STATE_OFFLINE 4
+#define STATE_DOCKED 5
 
   
-// misc size defintion
+// UI size defintions
   
 #define ROOMBA_SIZE 100
 #define CROSS_SIZE 100
@@ -28,27 +29,25 @@
 #define HOME_ICON_SIZE 15
   
   
-  
+// static defintisons
 static Window *window;
-static TextLayer *text_layer_message;
-static ActionBarLayer *action_bar;
-
-static BitmapLayer *s_background_layer;
-static GBitmap *s_background_bitmap;
+static TextLayer *s_text_layer_message;
+static ActionBarLayer *s_action_bar;
+static BitmapLayer *s_roomba_layer;
 static BitmapLayer *s_cross_layer;
+
+static GBitmap *s_roomba_bitmap;
 static GBitmap *s_cross_bitmap;
+static GBitmap *s_clean_bitmap;
+static GBitmap *s_spot_bitmap;
+static GBitmap *s_dock_bitmap;
 
-static GBitmap *s_clean_bitmap, *s_spot_bitmap, *s_home_bitmap;
-
-
-static char conditions_buffer[32];
-
-  
+static char message_buffer[32];
 
 static void refreshMessage(const char* msg)
 {
-  snprintf(conditions_buffer, sizeof(conditions_buffer), "%s", msg);
-  text_layer_set_text(text_layer_message, conditions_buffer);
+  snprintf(message_buffer, sizeof(message_buffer), "%s", msg);
+  text_layer_set_text(s_text_layer_message, message_buffer);
 }
   
 
@@ -57,13 +56,14 @@ static void refreshMessage(const char* msg)
 static void refreshState(int state)
 {
   switch(state) {
-  case ROOMBA_STATE_CLEANING :
-  case ROOMBA_STATE_SPOTING :
-  case ROOMBA_STATE_DOCKING :
-  case ROOMBA_STATE_OFF :
+  case STATE_CLEANING :
+  case STATE_SPOTING :
+  case STATE_DOCKING :
+  case STATE_OFF :
+  case STATE_DOCKED :
     layer_set_hidden((Layer *)s_cross_layer,true);
     break;
-  case ROOMBA_STATE_OFFLINE :  
+  case STATE_OFFLINE :  
     layer_set_hidden((Layer *)s_cross_layer,false);
     break;
   }
@@ -79,10 +79,10 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   while(t != NULL) {
     // Which key was received?
     switch(t->key) {
-    case TEST_MESSAGE_STR:
-      refreshMessage(t->value->cstring);
+    case KEY_MESSAGE:
+         refreshMessage(t->value->cstring);
       break;
-    case ROOMBA_STATE:
+    case KEY_STATE:
       refreshState(t->value->uint16);
       break;
     default:
@@ -139,14 +139,14 @@ static void window_load(Window *window) {
   
   GRect bounds = layer_get_bounds(window_layer);
   // Create roomba icon GBitmap
-  s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_ROOMBA_FULL);
+  s_roomba_bitmap = gbitmap_create_with_resource(RESOURCE_ID_ROOMBA_FULL);
   // create roomba icon layer
-  s_background_layer = bitmap_layer_create(GRect((bounds.size.w - ACTION_BAR_WIDTH - ROOMBA_SIZE)/2, (bounds.size.h - ROOMBA_SIZE - 5), ROOMBA_SIZE,ROOMBA_SIZE));
-  bitmap_layer_set_bitmap(s_background_layer, s_background_bitmap);  
+  s_roomba_layer = bitmap_layer_create(GRect((bounds.size.w - ACTION_BAR_WIDTH - ROOMBA_SIZE)/2, (bounds.size.h - ROOMBA_SIZE - 5), ROOMBA_SIZE,ROOMBA_SIZE));
+  bitmap_layer_set_bitmap(s_roomba_layer, s_roomba_bitmap);  
 #ifdef PBL_SDK_3
-  bitmap_layer_set_compositing_mode(s_background_layer,GCompOpSet);
+  bitmap_layer_set_compositing_mode(s_roomba_layer,GCompOpSet);
 #endif
-  layer_add_child(window_get_root_layer(window), bitmap_layer_get_layer(s_background_layer));
+  layer_add_child(window_get_root_layer(window), bitmap_layer_get_layer(s_roomba_layer));
 
  // Create roomba icon GBitmap
   s_cross_bitmap = gbitmap_create_with_resource(RESOURCE_ID_CROSS_FULL);
@@ -160,35 +160,35 @@ static void window_load(Window *window) {
   
 
   // create message layer
-  text_layer_message = text_layer_create((GRect) { .origin = { 0, 10 }, .size = { bounds.size.w -  ACTION_BAR_WIDTH , 30 } });
-  text_layer_set_background_color(text_layer_message,GColorClear);
-  text_layer_set_font(text_layer_message, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
-  text_layer_set_text_alignment(text_layer_message, GTextAlignmentCenter);
-  layer_add_child(window_layer, text_layer_get_layer(text_layer_message));
+  s_text_layer_message = text_layer_create((GRect) { .origin = { 0, 10 }, .size = { bounds.size.w -  ACTION_BAR_WIDTH , 30 } });
+  text_layer_set_background_color(s_text_layer_message,GColorClear);
+  text_layer_set_font(s_text_layer_message, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
+  text_layer_set_text_alignment(s_text_layer_message, GTextAlignmentCenter);
+  layer_add_child(window_layer, text_layer_get_layer(s_text_layer_message));
   
    // Initialize the action bar:
-  action_bar = action_bar_layer_create();
-  action_bar_layer_add_to_window(action_bar, window);
-  action_bar_layer_set_click_config_provider(action_bar, click_config_provider);
+  s_action_bar = action_bar_layer_create();
+  action_bar_layer_add_to_window(s_action_bar, window);
+  action_bar_layer_set_click_config_provider(s_action_bar, click_config_provider);
   s_clean_bitmap = gbitmap_create_with_resource(RESOURCE_ID_CLEAN_ICON);
   s_spot_bitmap = gbitmap_create_with_resource(RESOURCE_ID_SPOT_ICON);
-  s_home_bitmap = gbitmap_create_with_resource(RESOURCE_ID_DOCK_ICON);
-  action_bar_layer_set_icon(action_bar, BUTTON_ID_UP, s_clean_bitmap);
-  action_bar_layer_set_icon(action_bar, BUTTON_ID_SELECT, s_spot_bitmap);
-  action_bar_layer_set_icon(action_bar, BUTTON_ID_DOWN, s_home_bitmap);
+  s_dock_bitmap = gbitmap_create_with_resource(RESOURCE_ID_DOCK_ICON);
+  action_bar_layer_set_icon(s_action_bar, BUTTON_ID_UP, s_clean_bitmap);
+  action_bar_layer_set_icon(s_action_bar, BUTTON_ID_SELECT, s_spot_bitmap);
+  action_bar_layer_set_icon(s_action_bar, BUTTON_ID_DOWN, s_dock_bitmap);
 
 
   refreshMessage("Connecting...");
-
+  send(KEY_CMD, CMD_GET_STATE);
 }
 
 static void window_unload(Window *window) {
-  action_bar_layer_destroy(action_bar);
-  text_layer_destroy(text_layer_message);
+  action_bar_layer_destroy(s_action_bar);
+  text_layer_destroy(s_text_layer_message);
   bitmap_layer_destroy(s_cross_layer);
   gbitmap_destroy(s_cross_bitmap);
-  bitmap_layer_destroy(s_background_layer);
-  gbitmap_destroy(s_background_bitmap);
+  bitmap_layer_destroy(s_roomba_layer);
+  gbitmap_destroy(s_roomba_bitmap);
   
 }
 
